@@ -1,0 +1,135 @@
+import prisma from "../config/database.js";
+
+/*
+========================
+  CREATE JOB
+========================
+*/
+
+export const createJob = async (req, res) => {
+  try {
+    const { title, company, status, appliedDate } = req.body;
+
+    if (!title || !company) {
+      return res.status(400).json({ message: "Title and company are required" });
+    }
+
+    const job = await prisma.job.create({
+      data: {
+        title,
+        company,
+        status,
+        appliedDate: appliedDate ? new Date(appliedDate) : null,
+        userId: req.user.id,
+      },
+    });
+
+    res.status(201).json({
+      message: "Job created successfully",
+      job,
+    });
+  } catch (error) {
+    console.error("Create job error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+/*
+========================
+  GET ALL JOBS
+========================
+*/
+
+export const getJobs = async (req, res) => {
+  try {
+    const { status, page = 1, limit = 10 } = req.query;
+
+    const filters = {
+      userId: req.user.id,
+    };
+
+    if (status) {
+      filters.status = status;
+    }
+
+    const jobs = await prisma.job.findMany({
+      where: filters,
+      skip: (page - 1) * Number(limit),
+      take: Number(limit),
+      orderBy: { createdAt: "desc" },
+    });
+
+    res.json({ jobs });
+  } catch (error) {
+    console.error("Get jobs error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+/*
+========================
+  UPDATE JOB
+========================
+*/
+
+export const updateJob = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const existingJob = await prisma.job.findFirst({
+      where: {
+        id,
+        userId: req.user.id,
+      },
+    });
+
+    if (!existingJob) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+
+    const updatedJob = await prisma.job.update({
+      where: { id },
+      data: req.body,
+    });
+
+    res.json({
+      message: "Job updated successfully",
+      job: updatedJob,
+    });
+  } catch (error) {
+    console.error("Update job error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+/*
+========================
+  DELETE JOB
+========================
+*/
+
+export const deleteJob = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const existingJob = await prisma.job.findFirst({
+      where: {
+        id,
+        userId: req.user.id,
+      },
+    });
+
+    if (!existingJob) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+
+    await prisma.job.delete({
+      where: { id },
+    });
+
+    res.json({ message: "Job deleted successfully" });
+  } catch (error) {
+    console.error("Delete job error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
