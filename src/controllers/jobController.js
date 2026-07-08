@@ -1,4 +1,5 @@
 import prisma from "../config/database.js";
+import { getJobsService } from "../services/jobService.js";
 
 /*
 ========================
@@ -42,27 +43,15 @@ export const createJob = async (req, res) => {
 
 export const getJobs = async (req, res) => {
   try {
-    const { status, page = 1, limit = 10 } = req.query;
+    const result = await getJobsService(req.user.id, req.query);
 
-    const filters = {
-      userId: req.user.id,
-    };
-
-    if (status) {
-      filters.status = status;
-    }
-
-    const jobs = await prisma.job.findMany({
-      where: filters,
-      skip: (page - 1) * Number(limit),
-      take: Number(limit),
-      orderBy: { createdAt: "desc" },
-    });
-
-    res.json({ jobs });
+    res.json(result);
   } catch (error) {
     console.error("Get jobs error:", error);
-    res.status(500).json({ message: "Internal server error" });
+
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 

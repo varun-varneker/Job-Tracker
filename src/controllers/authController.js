@@ -42,9 +42,14 @@ export const registerUser = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Register error:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
+      console.error("========== LOGIN ERROR ==========");
+      console.error(error);
+      console.error("================================");
+
+      res.status(500).json({
+        message: error.message
+  });
+}
 };
 
 // LOGIN USER
