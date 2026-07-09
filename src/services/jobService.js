@@ -1,5 +1,11 @@
 import prisma from "../config/database.js";
 
+/*
+========================
+  GET JOBS SERVICE
+========================
+*/
+
 export const getJobsService = async (userId, query) => {
   const { status, page = 1, limit = 10, search } = query;
 
@@ -57,4 +63,40 @@ export const getJobsService = async (userId, query) => {
     currentPage: Number(page),
     jobs,
   };
+};
+
+/*
+========================
+  CREATE JOBS SERVICE
+========================
+*/
+
+export const createJobService = async (userId, jobData) => {
+  const { title, company, status, appliedDate } = jobData;
+
+  if (!title || !company) {
+    throw new Error("Title and company are required");
+  }
+
+  const job = await prisma.job.create({
+    data: {
+      title,
+      company,
+      status,
+      appliedDate: appliedDate ? new Date(appliedDate) : null,
+      userId,
+    },
+    include: {
+      resumes: {
+        select: {
+          id: true,
+          fileName: true,
+          fileUrl: true,
+          uploadedAt: true,
+        },
+      },
+    },
+  });
+
+  return job;
 };

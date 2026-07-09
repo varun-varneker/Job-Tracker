@@ -1,5 +1,8 @@
 import prisma from "../config/database.js";
-import { getJobsService } from "../services/jobService.js";
+import {
+    getJobsService,
+    createJobService
+} from "../services/jobService.js";
 
 /*
 ========================
@@ -9,21 +12,7 @@ import { getJobsService } from "../services/jobService.js";
 
 export const createJob = async (req, res) => {
   try {
-    const { title, company, status, appliedDate } = req.body;
-
-    if (!title || !company) {
-      return res.status(400).json({ message: "Title and company are required" });
-    }
-
-    const job = await prisma.job.create({
-      data: {
-        title,
-        company,
-        status,
-        appliedDate: appliedDate ? new Date(appliedDate) : null,
-        userId: req.user.id,
-      },
-    });
+    const job = await createJobService(req.user.id, req.body);
 
     res.status(201).json({
       message: "Job created successfully",
@@ -31,7 +20,10 @@ export const createJob = async (req, res) => {
     });
   } catch (error) {
     console.error("Create job error:", error);
-    res.status(500).json({ message: "Internal server error" });
+
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
