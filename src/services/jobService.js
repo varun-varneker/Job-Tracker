@@ -45,16 +45,6 @@ export const getJobsService = async (userId, query) => {
     orderBy: {
       createdAt: "desc",
     },
-    include: {
-      resumes: {
-        select: {
-          id: true,
-          fileName: true,
-          fileUrl: true,
-          uploadedAt: true,
-        },
-      },
-    },
   });
 
   return {
@@ -85,16 +75,6 @@ export const createJobService = async (userId, jobData) => {
       status,
       appliedDate: appliedDate ? new Date(appliedDate) : null,
       userId,
-    },
-    include: {
-      resumes: {
-        select: {
-          id: true,
-          fileName: true,
-          fileUrl: true,
-          uploadedAt: true,
-        },
-      },
     },
   });
 

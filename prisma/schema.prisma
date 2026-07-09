@@ -8,24 +8,64 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  jobs      Job[]
+  id       String @id @default(uuid())
+  name     String
+  email    String @unique
+  password String
+
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  jobs    Job[]
+  resumes Resume[] @relation("UserResumes")
+
+  defaultResumeId String?
+  defaultResume   Resume? @relation("DefaultResume", fields: [defaultResumeId], references: [id])
+}
+
+model Resume {
+  id String @id @default(uuid())
+
+  displayName String
+  fileName    String
+  fileUrl     String
+
+  fileSize Int
+  mimeType String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation("UserResumes", fields: [userId], references: [id])
+
+  jobs Job[]
+
+  defaultForUsers User[] @relation("DefaultResume")
 }
 
 model Job {
-  id          String     @id @default(uuid())
-  title       String
-  company     String
-  status      JobStatus  @default(APPLIED)
+  id String @id @default(uuid())
+
+  title   String
+  company String
+
+  notes  String?
+  jobUrl String?
+  source ApplicationSource?
+
+  status JobStatus @default(APPLIED)
+
   appliedDate DateTime?
-  resumeUrl   String?
-  userId      String
-  user        User       @relation(fields: [userId], references: [id])
-  createdAt   DateTime   @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  resumeId String?
+  resume   Resume? @relation(fields: [resumeId], references: [id])
 }
 
 enum JobStatus {
@@ -33,4 +73,13 @@ enum JobStatus {
   INTERVIEW
   OFFER
   REJECTED
+}
+
+enum ApplicationSource {
+  LINKEDIN
+  INDEED
+  NAUKRI
+  COMPANY_WEBSITE
+  REFERRAL
+  OTHER
 }
