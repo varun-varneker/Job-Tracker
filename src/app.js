@@ -5,6 +5,7 @@ import prisma from "./config/database.js";
 import authRoutes from "./routes/authRoutes.js";
 import { protect } from "./middleware/authMiddleware.js";
 import jobRoutes from "./routes/jobRoutes.js";
+import resumeRoutes from "./routes/resumeRoutes.js";
 
 dotenv.config();
 
@@ -65,13 +66,14 @@ app.get("/api/test-db", async (req, res) => {
 });
 
 /*
-========================
-  AUTH ROUTES & JOB ROUTES
-========================
+=========================================
+  AUTH ROUTES & JOB ROUTES & RESUME ROUTES
+=========================================
 */
 
 app.use("/api/auth", authRoutes);
 app.use("/api/jobs", jobRoutes);
+app.use("/api/resumes", resumeRoutes);
 
 /*
 ========================
