@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import prisma from "../config/database.js";
+import ApiError from "../utils/ApiError.js"; // ⭐ NEW
 
 const SALT_ROUNDS = 10;
 
@@ -16,7 +17,8 @@ export const registerUserService = async ({ name, email, password }) => {
   });
 
   if (existingUser) {
-    throw new Error("User already exists");
+    // ⭐ CHANGED
+    throw new ApiError(409, "User already exists");
   }
 
   const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
@@ -48,19 +50,23 @@ export const loginUserService = async ({ email, password }) => {
   });
 
   if (!user) {
-    throw new Error("Invalid credentials");
+    // ⭐ CHANGED
+    throw new ApiError(401, "Invalid credentials");
   }
 
   const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
-    throw new Error("Invalid credentials");
+    // ⭐ CHANGED
+    throw new ApiError(401, "Invalid credentials");
   }
 
   const token = jwt.sign(
     { userId: user.id },
     process.env.JWT_SECRET,
-    { expiresIn: "7d" }
+    {
+      expiresIn: "7d",
+    }
   );
 
   return {
