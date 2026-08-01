@@ -26,9 +26,10 @@ model User {
 model Resume {
   id String @id @default(uuid())
 
-  displayName String
-  fileName    String
-  fileUrl     String
+  displayName      String
+  originalFileName String
+  storedFileName   String
+  fileUrl          String
 
   fileSize Int
   mimeType String
@@ -52,20 +53,25 @@ model Job {
 
   notes  String?
   jobUrl String?
+
   source ApplicationSource?
 
   status JobStatus @default(APPLIED)
 
   appliedDate DateTime?
 
+  resumeId String?
+  resume   Resume? @relation(fields: [resumeId], references: [id])
+
+  favorite Boolean @default(false)
+
+  archived Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
-
-  resumeId String?
-  resume   Resume? @relation(fields: [resumeId], references: [id])
 }
 
 enum JobStatus {

@@ -10,7 +10,8 @@ CREATE RESUME
 export const createResumeService = async (userId, data) => {
   const {
     displayName,
-    fileName,
+    originalFileName,
+    storedFileName,
     fileUrl,
     fileSize,
     mimeType,
@@ -18,24 +19,25 @@ export const createResumeService = async (userId, data) => {
 
   if (
     !displayName ||
-    !fileName ||
+    !originalFileName ||
+    !storedFileName ||
     !fileUrl ||
     !fileSize ||
     !mimeType
   ) {
-    // ⭐ CHANGED
     throw new ApiError(400, "All fields are required.");
   }
 
   const resume = await prisma.resume.create({
-    data: {
+      data: {
       displayName,
-      fileName,
+      originalFileName,
+      storedFileName,
       fileUrl,
       fileSize,
       mimeType,
       userId,
-    },
+  },
   });
 
   return resume;
@@ -67,7 +69,8 @@ export const getResumesService = async (userId) => {
     select: {
       id: true,
       displayName: true,
-      fileName: true,
+      originalFileName: true,
+      storedFileName: true,
       fileUrl: true,
       fileSize: true,
       mimeType: true,
@@ -105,7 +108,8 @@ export const getResumeByIdService = async (userId, resumeId) => {
     select: {
       id: true,
       displayName: true,
-      fileName: true,
+      originalFileName: true,
+      storedFileName: true,
       fileUrl: true,
       fileSize: true,
       mimeType: true,
@@ -115,7 +119,6 @@ export const getResumeByIdService = async (userId, resumeId) => {
   });
 
   if (!resume) {
-    // ⭐ CHANGED
     throw new ApiError(404, "Resume not found");
   }
 
@@ -171,7 +174,8 @@ export const updateResumeService = async (
     select: {
       id: true,
       displayName: true,
-      fileName: true,
+      originalFileName: true,
+      storedFileName: true,
       fileUrl: true,
       fileSize: true,
       mimeType: true,
@@ -202,13 +206,11 @@ export const deleteResumeService = async (userId, resumeId) => {
   });
 
   if (!resume) {
-    // ⭐ CHANGED
     throw new ApiError(404, "Resume not found");
   }
 
   // Prevent deletion if resume is used by jobs
   if (resume.jobs.length > 0) {
-    // ⭐ CHANGED
     throw new ApiError(
       409,
       "Cannot delete this resume because it is linked to one or more job applications."
@@ -239,7 +241,6 @@ export const setDefaultResumeService = async (userId, resumeId) => {
   });
 
   if (!resume) {
-    // ⭐ CHANGED
     throw new ApiError(404, "Resume not found");
   }
 

@@ -4,6 +4,8 @@ import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import resumeRoutes from "./routes/resumeRoutes.js";
 import jobRoutes from "./routes/jobRoutes.js";
+import dashboardRoutes from "./routes/dashboardRoutes.js";
+import uploadRoutes from "./routes/uploadRoutes.js";
 
 import { protect } from "./middleware/authMiddleware.js";
 import errorHandler from "./middleware/errorHandler.js";
@@ -12,6 +14,17 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "../uploads"))
+);
 
 // Health Check
 app.get("/", (req, res) => {
@@ -25,6 +38,8 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/resumes", resumeRoutes);
 app.use("/api/jobs", protect, jobRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/upload", uploadRoutes);
 
 // Protected Route Example
 app.get("/api/protected", protect, (req, res) => {

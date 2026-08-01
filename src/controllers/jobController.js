@@ -1,116 +1,102 @@
-import prisma from "../config/database.js";
+import asyncHandler from "../utils/asyncHandler.js";
+
 import {
-    getJobsService,
-    createJobService
+  createJobService,
+  getJobsService,
+  getJobByIdService,
+  updateJobService,
+  deleteJobService,
 } from "../services/jobService.js";
 
 /*
 ========================
-  CREATE JOB
+CREATE JOB
 ========================
 */
 
-export const createJob = async (req, res) => {
-  try {
-    const job = await createJobService(req.user.id, req.body);
+export const createJob = asyncHandler(async (req, res) => {
+  const job = await createJobService(
+    req.user.id,
+    req.body
+  );
 
-    res.status(201).json({
-      message: "Job created successfully",
-      job,
-    });
-  } catch (error) {
-    console.error("Create job error:", error);
-
-    res.status(500).json({
-      message: error.message,
-    });
-  }
-};
+  res.status(201).json({
+    success: true,
+    message: "Job created successfully",
+    job,
+  });
+});
 
 /*
 ========================
-  GET ALL JOBS
+GET ALL JOBS
 ========================
 */
 
-export const getJobs = async (req, res) => {
-  try {
-    const result = await getJobsService(req.user.id, req.query);
+export const getJobs = asyncHandler(async (req, res) => {
+  const result = await getJobsService(
+    req.user.id,
+    req.query
+  );
 
-    res.json(result);
-  } catch (error) {
-    console.error("Get jobs error:", error);
-
-    res.status(500).json({
-      message: error.message,
-    });
-  }
-};
+  res.status(200).json({
+    success: true,
+    ...result,
+  });
+});
 
 /*
 ========================
-  UPDATE JOB
+GET SINGLE JOB
 ========================
 */
 
-export const updateJob = async (req, res) => {
-  try {
-    const { id } = req.params;
+export const getJobById = asyncHandler(async (req, res) => {
+  const job = await getJobByIdService(
+    req.user.id,
+    req.params.id
+  );
 
-    const existingJob = await prisma.job.findFirst({
-      where: {
-        id,
-        userId: req.user.id,
-      },
-    });
-
-    if (!existingJob) {
-      return res.status(404).json({ message: "Job not found" });
-    }
-
-    const updatedJob = await prisma.job.update({
-      where: { id },
-      data: req.body,
-    });
-
-    res.json({
-      message: "Job updated successfully",
-      job: updatedJob,
-    });
-  } catch (error) {
-    console.error("Update job error:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
+  res.status(200).json({
+    success: true,
+    job,
+  });
+});
 
 /*
 ========================
-  DELETE JOB
+UPDATE JOB
 ========================
 */
 
-export const deleteJob = async (req, res) => {
-  try {
-    const { id } = req.params;
+export const updateJob = asyncHandler(async (req, res) => {
+  const job = await updateJobService(
+    req.user.id,
+    req.params.id,
+    req.body
+  );
 
-    const existingJob = await prisma.job.findFirst({
-      where: {
-        id,
-        userId: req.user.id,
-      },
-    });
+  res.status(200).json({
+    success: true,
+    message: "Job updated successfully",
+    job,
+  });
+});
 
-    if (!existingJob) {
-      return res.status(404).json({ message: "Job not found" });
-    }
+/*
+========================
+DELETE JOB
+========================
+*/
 
-    await prisma.job.delete({
-      where: { id },
-    });
+export const deleteJob = asyncHandler(async (req, res) => {
+  await deleteJobService(
+    req.user.id,
+    req.params.id
+  );
 
-    res.json({ message: "Job deleted successfully" });
-  } catch (error) {
-    console.error("Delete job error:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
+  res.status(200).json({
+    success: true,
+    message: "Job deleted successfully",
+  });
+});
