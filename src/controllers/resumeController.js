@@ -1,5 +1,5 @@
 import asyncHandler from "../utils/asyncHandler.js"; // ⭐ NEW
-
+import ApiError from "../utils/ApiError.js";
 import {
   createResumeService,
   getResumesService,
@@ -9,6 +9,9 @@ import {
   setDefaultResumeService,
 } from "../services/resumeService.js";
 
+
+
+
 /*
 ========================
 CREATE RESUME
@@ -16,11 +19,33 @@ CREATE RESUME
 */
 
 export const createResume = asyncHandler(async (req, res) => {
-  const resume = await createResumeService(req.user.id, req.body);
+  if (!req.file) {
+    throw new ApiError(400, "Please upload a PDF resume.");
+  }
+
+  const { displayName } = req.body;
+
+  if (!displayName) {
+    throw new ApiError(400, "Display name is required.");
+  }
+
+  const resumeData = {
+    displayName,
+    originalFileName: req.file.originalname,
+    storedFileName: req.file.filename,
+    fileUrl: `/uploads/resumes/${req.file.filename}`,
+    fileSize: req.file.size,
+    mimeType: req.file.mimetype,
+  };
+
+  const resume = await createResumeService(
+    req.user.id,
+    resumeData
+  );
 
   res.status(201).json({
-    success: true, // ⭐ NEW
-    message: "Resume created successfully",
+    success: true,
+    message: "Resume uploaded successfully",
     resume,
   });
 });

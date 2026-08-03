@@ -14,7 +14,13 @@ console.log("Resume routes loaded");
 
 router.use(protect);
 
-router.post("/", createResume);
+import upload from "../middleware/uploadMiddleware.js";
+
+router.post(
+  "/",
+  upload.single("resume"),
+  createResume
+);
 router.get("/", getResumes);
 router.get("/:id", getResumeById);
 router.patch("/:id",updateResume);
