@@ -5,7 +5,7 @@ import authRoutes from "./routes/authRoutes.js";
 import resumeRoutes from "./routes/resumeRoutes.js";
 import jobRoutes from "./routes/jobRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
-import uploadRoutes from "./routes/uploadRoutes.js";
+
 
 import { protect } from "./middleware/authMiddleware.js";
 import errorHandler from "./middleware/errorHandler.js";
@@ -39,7 +39,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/resumes", resumeRoutes);
 app.use("/api/jobs", protect, jobRoutes);
 app.use("/api/dashboard", dashboardRoutes);
-app.use("/api/upload", uploadRoutes);
+
 
 // Protected Route Example
 app.get("/api/protected", protect, (req, res) => {
