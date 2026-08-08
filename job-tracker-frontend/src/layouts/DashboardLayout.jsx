@@ -1,20 +1,27 @@
+import { useState } from "react";
+
 import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
 
 export default function DashboardLayout({ children }) {
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
   return (
-    <div className="flex min-h-screen bg-slate-100">
-      {/* Sidebar */}
-      <Sidebar />
+    <div className="min-h-screen bg-slate-50">
+      <Sidebar
+        mobileOpen={mobileSidebarOpen}
+        onMobileClose={() => setMobileSidebarOpen(false)}
+      />
 
-      {/* Main Content */}
-      <div className="flex flex-1 flex-col">
-        {/* Header */}
-        <Header />
+      <div className="lg:pl-64">
+        <Header
+          onMenuClick={() => setMobileSidebarOpen(true)}
+        />
 
-        {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-8">
-          {children}
+        <main className="min-h-[calc(100vh-4rem)] p-4 sm:p-6 lg:p-8">
+          <div className="mx-auto w-full max-w-[1600px]">
+            {children}
+          </div>
         </main>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { loginUser } from "../api/authApi";
 
@@ -19,6 +20,8 @@ AUTH PROVIDER
 */
 
 export const AuthProvider = ({ children }) => {
+  const queryClient = useQueryClient();
+
   const [user, setUser] = useState(getUser());
   const [loading, setLoading] = useState(true);
 
@@ -45,16 +48,16 @@ export const AuthProvider = ({ children }) => {
   ========================
   */
 
-  const login = async (credentials) => {
-    const data = await loginUser(credentials);
+const login = async (credentials) => {
+  const data = await loginUser(credentials);
 
-    saveToken(data.token);
-    saveUser(data.user);
+  saveToken(data.token);
+  saveUser(data.user);
 
-    setUser(data.user);
+  setUser(data.user);
 
-    return data;
-  };
+  return data;
+};
 
   /*
   ========================
@@ -62,10 +65,14 @@ export const AuthProvider = ({ children }) => {
   ========================
   */
 
-  const logout = () => {
-    clearAuth();
-    setUser(null);
-  };
+ const logout = () => {
+  clearAuth();
+
+  // Remove all cached data belonging to the previous user
+  queryClient.clear();
+
+  setUser(null);
+};
 
   /*
   ========================
