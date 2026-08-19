@@ -224,21 +224,26 @@ export const updateJobService = async (
   }
 
   const updatedJob = await prisma.job.update({
-    where: {
-      id: jobId,
-    },
+     where: {
+       id: jobId,
+      },
 
-    data,
+  data: {
+    ...data,
+    appliedDate: data.appliedDate
+      ? new Date(data.appliedDate)
+      : null,
+  },
 
-    include: {
-      resume: {
-        select: {
-          id: true,
-          displayName: true,
-        },
+  include: {
+    resume: {
+      select: {
+        id: true,
+        displayName: true,
       },
     },
-  });
+  },
+});
 
   return updatedJob;
 };
