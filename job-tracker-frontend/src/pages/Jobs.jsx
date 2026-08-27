@@ -6,12 +6,16 @@ import JobKanban from "../components/jobs/JobKanban";
 import JobModal from "../components/jobs/JobModal";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
-import { useJobs, useDeleteJob } from "../hooks/useJobs";
+import {
+  useJobs,
+  useDeleteJob,
+  useUpdateJob,
+} from "../hooks/useJobs";  
 
 export default function Jobs() {
   const { data, isLoading, error } = useJobs();
   const deleteMutation = useDeleteJob();
-
+  const updateMutation = useUpdateJob();
   const [view, setView] = useState("board");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
@@ -56,6 +60,18 @@ export default function Jobs() {
     await deleteMutation.mutateAsync(job.id);
   };
 
+  const handleStatusChange = async (job, newStatus) => {
+  try {
+    await updateMutation.mutateAsync({
+      id: job.id,
+      data: {
+        status: newStatus,
+      },
+    });
+  } catch (error) {
+    console.error("Failed to update job status:", error);
+  }
+};
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -182,6 +198,7 @@ export default function Jobs() {
             onAdd={handleAddJob}
             onEdit={handleEditJob}
             onDelete={handleDeleteJob}
+            onStatusChange={handleStatusChange}
           />
         )}
 
