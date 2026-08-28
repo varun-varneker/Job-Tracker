@@ -1,96 +1,89 @@
-# Job Tracker Backend
+# CareerCanvas
 
-A Node.js backend application for tracking job applications built with Express, Prisma, and Supabase.
+CareerCanvas is a full-stack career management platform designed to help users organize, track, and analyze their job applications throughout the hiring process.
 
-## Features
+The platform provides a centralized workspace where users can manage job applications, resumes, application statuses, and career activity from a single dashboard.
 
-- REST API built with Express.js
-- PostgreSQL database hosted on Supabase
-- Prisma ORM for database management
-- User authentication
-- Job application tracking with status management
+---
 
-## Tech Stack
+## 🚀 Current Status
 
-- **Runtime**: Node.js
-- **Framework**: Express.js
-- **Database**: PostgreSQL (Supabase)
-- **ORM**: Prisma
-- **Authentication**: JWT
-- **File Upload**: Multer
+CareerCanvas is currently under active development.
 
-## Database Schema
+The core application workflow is already functional, including:
 
-### User Model
-- id (UUID)
-- name
-- email (unique)
-- password (hashed)
-- jobs (relation)
-- createdAt
+- User registration and login
+- JWT-based authentication
+- Protected application routes
+- Job application CRUD operations
+- Kanban-style job tracking
+- Drag-and-drop application status management
+- Resume management
+- Dashboard statistics
+- Application status analytics
+- Resume usage analytics
+- Recent job applications
+- User-specific data isolation
+- Search and status filtering
+- Job editing and deletion
 
-### Job Model
-- id (UUID)
-- title
-- company
-- status (APPLIED | INTERVIEW | OFFER | REJECTED)
-- appliedDate
-- resumeUrl
-- userId (relation to User)
-- createdAt
+The project is being developed with a production-oriented architecture so that it can eventually support multiple users and real-world usage.
 
-## Setup Instructions
+---
 
-1. Clone the repository
-```bash
-git clone https://github.com/varun-varneker/Job-Tracker.git
-cd Job-Tracker
-```
+# ✨ Features
 
-2. Install dependencies
-```bash
-npm install
-```
+## Authentication
 
-3. Create a `.env` file in the root directory
-```env
-DATABASE_URL=your_supabase_connection_string
-JWT_SECRET=your_secret_key
-PORT=5000
-```
+- User registration
+- User login
+- JWT authentication
+- Protected API routes
+- Persistent login sessions
+- Logout and authentication cleanup
+- User-specific application data
 
-4. Generate Prisma Client
-```bash
-npx prisma generate
-```
+## Job Application Tracking
 
-5. Push database schema to Supabase
-```bash
-npx prisma db push
-```
+Users can create and manage job applications with information such as:
 
-6. Start the development server
-```bash
-npm run dev
-```
+- Job title
+- Company
+- Application status
+- Applied date
+- Job URL
+- Application source
+- Notes
+- Resume used for the application
 
-## API Endpoints
+### Supported Application Statuses
 
-- `GET /` - Health check
-- `GET /api/test-db` - Test database connection
+- Applied
+- Interview
+- Offer
+- Rejected
 
-## Scripts
+Applications can be moved between statuses using the Kanban board.
 
-- `npm run dev` - Start development server with nodemon
-- `npm start` - Start production server
-- `npx prisma studio` - Open Prisma Studio to manage database
+## Kanban Board
 
-## Environment Variables
+CareerCanvas provides a visual Kanban workflow for managing applications.
 
-- `DATABASE_URL` - PostgreSQL connection string from Supabase
-- `JWT_SECRET` - Secret key for JWT token generation
-- `PORT` - Server port (default: 5000)
+```text
+┌────────────┐
+│  Applied   │
+└─────┬──────┘
+      ↓
+┌────────────┐
+│ Interview  │
+└─────┬──────┘
+      ↓
+┌────────────┐
+│   Offer    │
+└────────────┘
 
-## License
+        or
 
-MIT
+┌────────────┐
+│  Rejected  │
+└────────────┘
